@@ -1,0 +1,179 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\author{}
+\date{}
+
+\begin{document}
+
+RELATÓRIO COMPLETO -- Sistema HospitalDB
+
+Este relatório apresenta, descreve e justifica todas as etapas
+envolvidas no desenvolvimento do projeto HospitalDB, criado com o
+objetivo de fornecer uma solução organizada e funcional para o
+gerenciamento básico de informações dentro de um ambiente hospitalar. O
+sistema foi desenvolvido em três partes principais: modelagem do banco
+de dados, implementação física em SQL e criação de uma aplicação Python
+para interação com o banco de dados. A seguir, são detalhadas todas as
+decisões técnicas e operacionais adotadas ao longo do desenvolvimento do
+projeto.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Criação do Banco de Dados
+\end{enumerate}
+
+O projeto teve início com a criação de um novo banco denominado
+HospitalDB, utilizando o mecanismo InnoDB. A escolha do InnoDB foi
+fundamental para garantir a utilização de chaves estrangeiras, ações de
+cascata e integridade referencial, fatores essenciais para a
+consistência de dados em um sistema hospitalar. Antes da criação,
+certificou-se de que nenhuma versão anterior do banco permanecia ativa,
+permitindo a construção de um ambiente completamente limpo e organizado.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Estrutura e Modelagem das Tabelas
+\end{enumerate}
+
+A modelagem foi planejada para representar de maneira simples, clara e
+funcional os elementos essenciais de um hospital. As tabelas definidas
+foram Paciente, Medico e Consulta, representando o núcleo básico de
+qualquer sistema de atendimento.
+
+2.1. Tabela Paciente\\
+A tabela Paciente foi desenvolvida para armazenar as informações
+pessoais dos indivíduos atendidos no hospital. O CPF foi adotado como
+chave primária por ser um identificador único e amplamente utilizado. Os
+atributos definidos foram: cpf, nome, telefone e dataNascimento. Essa
+estrutura garante que o sistema só permita consultas associadas a
+pacientes devidamente cadastrados.
+
+2.2. Tabela Medico\\
+A tabela Medico representa os profissionais de saúde. Foi criada com um
+campo id de auto incremento como chave primária, facilitando a
+organização e identificação dos médicos. Os atributos armazenados são:
+id, nome e especialidade. Essa tabela se relaciona diretamente com a
+tabela de consultas, permitindo saber qual médico realizou cada
+atendimento.
+
+2.3. Tabela Consulta\\
+A tabela Consulta registra os atendimentos realizados no hospital. É
+nela que ocorre o vínculo entre pacientes e médicos. Os atributos
+definidos foram: id, dataHora, cpfPaciente e idMedico. A modelagem
+utiliza duas chaves estrangeiras, vinculadas às tabelas Paciente e
+Medico, ambas configuradas com ON DELETE CASCADE, garantindo que a
+exclusão de um paciente ou médico remova automaticamente consultas
+dependentes, evitando registros órfãos e preservando a integridade do
+banco.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  População do Banco de Dados
+\end{enumerate}
+
+Após criar as tabelas, foi desenvolvido um script de inserção de dados
+para gerar registros iniciais de testes. Foram cadastrados pacientes
+(como João Silva e Maria Souza), médicos (como Dr.~Carlos Mendes e Dra.
+Ana Pereira) e consultas associadas entre eles. Esses dados permitem que
+a aplicação Python execute consultas reais e demonstre plenamente o
+funcionamento do sistema.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Desenvolvimento da Aplicação Python
+\end{enumerate}
+
+Para possibilitar a interação do usuário com o banco de dados, foi
+criada uma aplicação em Python utilizando a biblioteca mysql.connector.
+Essa aplicação funciona como uma camada de comunicação entre o usuário e
+o banco, permitindo consultar pacientes, médicos e consultas de forma
+simples e direta.
+
+A aplicação foi estruturada em funções responsáveis por estabelecer a
+conexão com o banco, executar comandos SQL e exibir resultados de
+maneira clara. O menu apresentado ao usuário contém as opções:
+visualizar pacientes, visualizar médicos, visualizar consultas e sair.
+Cada opção envia um comando SQL ao banco e retorna os dados cadastrados,
+demonstrando a integração entre Python e SQL.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Conclusão
+\end{enumerate}
+
+O projeto HospitalDB apresenta um sistema funcional, organizado e
+coerente, capaz de realizar o gerenciamento básico de informações
+hospitalares. O banco de dados foi estruturado com foco em integridade e
+clareza, utilizando chaves primárias e estrangeiras adequadamente. A
+aplicação Python demonstra a conexão prática entre código e banco de
+dados, permitindo que a teoria da modelagem e dos comandos SQL seja
+aplicada em um ambiente real.
+
+O sistema está preparado para futuras expansões, como inclusão de
+tabelas de internações, exames, prontuários ou setores do hospital,
+mantendo sua flexibilidade e escalabilidade. Dessa forma, o projeto
+atende plenamente os requisitos solicitados e demonstra domínio sobre
+modelagem de dados, SQL e integração com Python.
+
+\end{document}
